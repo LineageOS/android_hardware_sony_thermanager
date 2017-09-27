@@ -231,6 +231,7 @@ struct sysfs_resource {
 	struct resource resource;
 	struct watch_ticket *ticket;
 	int fd;
+	char *filepath; //for the file path in case we would need to reopen the write handle
 };
 
 static void resource_sysfs_enable(struct resource *res)
@@ -258,6 +259,8 @@ static void resource_sysfs_close(struct resource *res)
 	if (sres->ticket != NULL)
 		watch_ticket_delete(sres->ticket);
 	close(sres->fd);
+	if (sres->filepath)
+		free(sres->filepath); //free up filepath string
 	free(sres);
 }
 
@@ -287,6 +290,15 @@ static int resource_sysfs_write_value(struct resource *res,
 			container_of(res, struct sysfs_resource, resource);
 	int rc;
 	rc = write(sres->fd, val, len);
+	if (rc <= 0) { // if write failed try to open the file again for writing and try the write again
+		LOGW("Resource called '%s' cannot be written, trying to reopen...\n", sres->resource.name);
+		sres->fd = open(sres->filepath, O_RDWR);
+		rc = write(sres->fd, val, len);
+		if (rc <= 0)
+			LOGE("Resource called '%s' cannot be reopened. Related mitigations will not work as expected!\n", sres->resource.name);
+		else
+			LOGI("Resource called '%s' has been reopened and updated successfully!\n", sres->resource.name);
+	}
 	return -(rc <= 0);
 }
 
@@ -329,6 +341,11 @@ struct resource *resource_sysfs_open(const char *name, const char *file,
 
 	strncpy(res->resource.name, name, sizeof(res->resource.name));
 	res->resource.name[sizeof(res->resource.name) - 1] = 0;
+
+	// store file param in filepath var for later use
+	const size_t len = strlen(file) + 1;  // +1 accounts for terminating NUL
+	res->filepath = malloc(len);
+	memcpy(res->filepath, file, len);
 
 	return &res->resource;
 }
