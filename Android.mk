@@ -37,6 +37,8 @@ LOCAL_SHARED_LIBRARIES := liblog libicuuc libcutils
 LOCAL_STATIC_LIBRARIES := libxml2
 LOCAL_MODULE := thermanager
 LOCAL_MODULE_TAGS := optional
+LOCAL_MODULE_OWNER := sony
+LOCAL_PROPRIETARY_MODULE := true
 include $(BUILD_EXECUTABLE)
 
 include $(CLEAR_VARS)
