@@ -575,6 +575,7 @@ struct halt_resource {
 static void resource_halt_cb(void *data, struct watch_ticket *ticket)
 {
 	//struct halt_resource *ares = (struct halt_resource)data;
+	(void)data;
 	watch_ticket_delete(ticket);
 	KLOGE("halting\n");
 	util_halt();

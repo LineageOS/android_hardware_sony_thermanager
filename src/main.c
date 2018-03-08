@@ -67,6 +67,8 @@ static int parse_one_resource(void *data, const struct dom_obj *obj)
 	const char *type;
 	const char *name;
 
+	(void)data;
+
 	type = dom_obj_attribute_value(obj, "type");
 	if (type == NULL) {
 		LOGE("resource missing 'type' attribute\n");
