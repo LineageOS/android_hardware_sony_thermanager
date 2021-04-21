@@ -15,10 +15,6 @@
 LOCAL_PATH:= $(call my-dir)
 
 include $(CLEAR_VARS)
-LOCAL_C_INCLUDES := \
-	external/libxml2/include \
-	external/icu4c/common/ \
-	external/icu/icu4c/source/common
 LOCAL_SRC_FILES := \
 	src/configuration.c \
 	src/control.c \
@@ -33,7 +29,7 @@ LOCAL_SRC_FILES := \
 	src/util.c \
 	src/main.c \
 
-LOCAL_SHARED_LIBRARIES := liblog libandroidicu libcutils
+LOCAL_SHARED_LIBRARIES := liblog libcutils
 LOCAL_STATIC_LIBRARIES := libxml2
 LOCAL_MODULE := thermanager
 LOCAL_MODULE_TAGS := optional
